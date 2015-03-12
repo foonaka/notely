@@ -28,17 +28,23 @@ angular.module('myApp.notes', ['ngRoute'])
     return (note && note.id) ? 'Update Note' : 'Create Note';
   };
 
-  $scope.commit = function() {
+  $scope.saveNote = function() {
     if ($scope.note.id) {
       NotesBackend.updateNote($scope.note);
     }
     else {
       NotesBackend.postNote($scope.note);
+      // TODO: keep note and set $scope.note to the persisted object
+      $scope.note = {};
     }
   };
 
   $scope.loadNote = function(note) {
     $scope.note = JSON.parse(JSON.stringify(note));
+  };
+
+  $scope.clearNote = function() {
+    $scope.note = {};
   };
 
   $scope.findNoteById = function(noteId) {
@@ -49,6 +55,7 @@ angular.module('myApp.notes', ['ngRoute'])
       }
     }
   };
+
 }])
 
 .service('NotesBackend', ['$http', function($http){
@@ -80,8 +87,8 @@ angular.module('myApp.notes', ['ngRoute'])
     $http.put(notelyBasePath + 'notes/' + note.id, {
       api_key: apiKey,
       note: note
-    }).success(function(response) {
-      // TODO: replace note in place in notes variable instead of full refresh
+    }).success(function(response){
+      // TODO: replace note in notes variable instead of full refresh
       self.fetchNotes();
     });
   };
