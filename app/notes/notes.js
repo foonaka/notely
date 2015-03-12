@@ -15,7 +15,7 @@ angular.module('myApp.notes', ['ngRoute'])
 .controller('NotesController', ['$scope', 'NotesBackend', function($scope, NotesBackend) {
 
   NotesBackend.fetchNotes();
-  
+
   $scope.notes = function() {
     return NotesBackend.getNotes();
   };
@@ -29,8 +29,8 @@ angular.module('myApp.notes', ['ngRoute'])
   };
 
   $scope.loadNote = function(note) {
-    $scope.note = note;
-  }
+    $scope.note = JSON.parse(JSON.stringify(note));
+  };
 
   $scope.findNoteById = function(noteId) {
     var notes = $scope.notes();
