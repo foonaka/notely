@@ -33,18 +33,14 @@ angular.module('myApp.notes', ['ngRoute'])
       NotesBackend.updateNote($scope.note);
     }
     else {
-      NotesBackend.postNote($scope.note);
-      // TODO: keep note and set $scope.note to the persisted object
-      $scope.note = {};
+      NotesBackend.postNote($scope.note, function(newNote) {
+        $scope.note = JSON.parse(JSON.stringify(newNote));
+      });
     }
   };
 
   $scope.loadNote = function(note) {
     $scope.note = JSON.parse(JSON.stringify(note));
-  };
-
-  $scope.clearNote = function() {
-    $scope.note = {};
   };
 
   $scope.findNoteById = function(noteId) {
@@ -54,6 +50,14 @@ angular.module('myApp.notes', ['ngRoute'])
         return notes[i];
       }
     }
+  };
+
+  $scope.clearNote = function() {
+    $scope.note = {};
+    // These do the same thing, but the broadcast listener in the
+    // focusOn directive provides a cleaner separation of code from HTML
+    // document.getElementById('note_title').focus();
+    $scope.$broadcast('noteCleared');
   };
 
 }])
@@ -74,12 +78,13 @@ angular.module('myApp.notes', ['ngRoute'])
     });
   };
 
-  this.postNote = function(noteData) {
+  this.postNote = function(noteData, callback) {
     $http.post(notelyBasePath + 'notes', {
       api_key: apiKey,
       note: noteData
     }).success(function(newNoteData) {
       notes.push(newNoteData);
+      callback(newNoteData);
     });
   };
 
