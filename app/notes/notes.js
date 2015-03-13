@@ -13,6 +13,10 @@ angular.module('myApp.notes', ['ngRoute', 'textAngular'])
 
   NotesBackend.fetchNotes();
 
+  $scope.user = function() {
+    return NotesBackend.getUser();
+  };
+
   $scope.notes = function() {
     return NotesBackend.getNotes();
   };

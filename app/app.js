@@ -1,11 +1,12 @@
 'use strict';
 
-var notelyBasePath = 'https://elevennote-nov-2014.herokuapp.com/api/v1/';
-var apiKey = '$2a$10$hR55Q0k/hwCRIqNCNquqwuOWKhgrFvD.Bre6UwtsiRuacLV/EU20q';
+
+// var apiKey = '$2a$10$hR55Q0k/hwCRIqNCNquqwuOWKhgrFvD.Bre6UwtsiRuacLV/EU20q';
 
 // Declare app level module which depends on views, and components
 angular.module('myApp', [
   'ngRoute',
+  'ngCookies',
   'myApp.view1',
   'myApp.view2',
   'myApp.version',
@@ -13,7 +14,7 @@ angular.module('myApp', [
   'myApp.login'
 ]).
 config(['$routeProvider', function($routeProvider) {
-  $routeProvider.otherwise({redirectTo: '/notes'});
+  $routeProvider.otherwise({redirectTo: '/login'});
 }]).
 
 directive('focusOn', function() {
@@ -24,13 +25,19 @@ directive('focusOn', function() {
   };
 })
 
-.service('NotesBackend', ['$http', function($http){
+.service('NotesBackend', ['$http', '$cookies', function($http, $cookies){
 
   var notes = [];
+  var notelyBasePath = 'https://elevennote-nov-2014.herokuapp.com/api/v1/';
+  var apiKey = $cookies.apiKey || '';
   var self = this;
 
   this.getNotes = function() {
     return notes;
+  };
+
+  this.getApiKey = function() {
+    return apiKey;
   };
 
   this.fetchNotes = function() {
@@ -65,6 +72,21 @@ directive('focusOn', function() {
       self.fetchNotes();
       callback();
     });
+  };
+
+  this.fetchApiKey = function(user, callback) {
+    $http.post(notelyBasePath + 'session', {
+      user: user
+    }).success(function(userData) {
+      apiKey = userData.api_key;
+      $cookies.apiKey = apiKey;
+      self.fetchNotes();
+      callback(userData);
+    });
+  };
+
+  this.getUser = function() {
+
   };
 
 }]);

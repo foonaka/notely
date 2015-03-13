@@ -9,8 +9,14 @@ angular.module('myApp.login', ['ngRoute'])
   });
 }])
 
-.controller('LoginController', ['$scope', function($scope) {
+
+.controller('LoginController', ['$scope', '$location', 'NotesBackend', function($scope, $location, NotesBackend) {
+  $scope.user = {};
+
   $scope.submit = function() {
-    
+    NotesBackend.fetchApiKey($scope.user, function(user) {
+      $location.path('notes');
+      $scope.user = user;
+    });
   };
 }]);
